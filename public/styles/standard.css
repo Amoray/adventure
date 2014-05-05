@@ -1,0 +1,46 @@
+body {
+	width: 100%;
+}
+
+header {
+	width: 100%;
+}
+
+nav	{
+	width: 100%;	
+}
+nav > ul {
+	width: 960px;
+}
+
+.centered {
+	max-width: 960px;
+	margin: 0 auto;
+}
+
+body div > section {
+	background-color: lightblue;
+	width: 78%;
+	min-width: 364px;
+	margin: 0px 1% 20px 1%;
+	float: left;
+}
+body div > aside {
+	background-color: orange;
+	width: 18%;
+	min-width: 172px;
+	margin: 0px 1% 20px 1%;
+	float: left;
+}
+
+@media screen and (max-width:960px) {
+	section {
+		float: none;
+		width: 100%;
+	}
+	aside {
+		float: none;
+		width: 100%;!
+	}
+}
+

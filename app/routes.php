@@ -11,7 +11,14 @@
 |
 */
 
-Route::get('/', function()
-{
-	return View::make('hello');
-});
+// Route::get('/', function ()
+// {
+	// $test = new Foo\Bar;
+	// return $test->derp();
+	// $test = new Template\Partial;
+// });
+Route::get('/', 'home@index');
+Route::get('/user/login/', 'user@login');
+
+Route::get('/path/{all}/things', 'home@index')->where('all', '.*');
+Route::get('{all}', 'home@index')->where('all', '.*');
