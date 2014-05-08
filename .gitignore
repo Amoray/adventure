@@ -1,5 +1,6 @@
 /app/config/local/*
 !/app/config/local/.gitkeep
+/app/database/seeds/*TableSeeder.php
 /bootstrap/compiled.php
 /vendor
 composer.phar

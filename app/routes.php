@@ -18,7 +18,13 @@
 	// $test = new Template\Partial;
 // });
 Route::get('/', 'home@index');
-Route::get('/user/login/', 'user@login');
+
+// User Routes
+// 
+Route::get('/login', 'user@show_login');
+
+
+
 
 Route::get('/path/{all}/things', 'home@index')->where('all', '.*');
 Route::get('{all}', 'home@index')->where('all', '.*');

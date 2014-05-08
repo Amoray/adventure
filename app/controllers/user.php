@@ -4,17 +4,22 @@ use Template\Template AS Template;
 use Template\Partial AS Partial;
 
 /**
-* Manages homepages
+* Manages user
 */
-class home extends BaseController
+class user extends BaseController
 {
 	public function index()
 	{
 		$template = $this->prepare();
 
 		return $template;
-		Partial::make('foundation', 'style');
-		// return Partial::make('foundation');
+	}
+
+	public function show_login()
+	{
+		$template = $this->prepare();
+
+		return $template;
 	}
 }
 
