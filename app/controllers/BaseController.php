@@ -2,6 +2,7 @@
 
 use Template\Template AS Template;
 use Template\Partial AS Partial;
+use Navigation\Menu AS Menu;
 
 class BaseController extends Controller {
 
@@ -38,6 +39,17 @@ class BaseController extends Controller {
 			->glue('style', Partial::headstyle('reset'))
 			->glue('style', Partial::headstyle('standard'))
 		;
+
+		$nav = Menu::make()
+			->addChildren( 
+				Menu::child('/', 'Home')->inheritClass('green'),
+				Menu::child('/login', 'Login')->inheritClass('blue')->inheritPermission('auth', !Auth::check())
+					->addChildren( Menu::child('/login/forgot', 'Forgot'))
+			)
+
+		;
+
+		$template->glue('nav', $nav);
 
 		return $template;
 	}

@@ -16,7 +16,8 @@
 			"app/tests/TestCase.php"
 		],
 		"psr-0": {
-			"Template": "app/library"
+			"Template": "app/library",
+			"Menu": "app/library"
 		}
 	},
 	"scripts": {
