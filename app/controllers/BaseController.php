@@ -38,18 +38,31 @@ class BaseController extends Controller {
 			->setTitle('Home')
 			->glue('style', Partial::headstyle('reset'))
 			->glue('style', Partial::headstyle('standard'))
+			->glue('style', Partial::headstyle('pnav'))
 		;
 
-		$nav = Menu::make()
-			->addChildren( 
-				Menu::child('/', 'Home')->inheritClass('green'),
-				Menu::child('/login', 'Login')->inheritClass('blue')->inheritPermission('auth', !Auth::check())
-					->addChildren( Menu::child('/login/forgot', 'Forgot'))
-			)
-
+		$nav = Menu::make()->prepend(Config::get('app.url'))
+			->add([
+				Menu::make('/', 'adventure')->inheritClass('red', true),
+				Menu::make(null, 'user')->inheritClass('orange', true)->inheritPermission('auth', !Auth::check())
+					->add([
+						Menu::make('/user/login', 'login'),
+						Menu::make('/user/login/forgot', 'forgot'),
+						Menu::make('/user/login/create', 'create'),
+					]),
+				Menu::make(null, "my")->inheritClass('yellow', true)->inheritPermission('auth', !Auth::check())
+					->add([
+						Menu::make('/my/characters', 'characters'),
+						Menu::make('/my/weapons', 'weapons')
+					]),
+				Menu::make(null, 'party')->inheritClass('green', true)->inheritPermission('auth', !Auth::check())
+					->add([
+						Menu::make('/party/characters', 'characters')
+					])
+			])
 		;
 
-		$template->glue('nav', $nav);
+		$template->glue('nav', (string)$nav);
 
 		return $template;
 	}

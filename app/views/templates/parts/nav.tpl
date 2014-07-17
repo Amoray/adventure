@@ -1,8 +1,7 @@
 <!-- cut:menu -->
-					<div class="tier#depth#menu #class?#">
 						<ul class="tier#depth#menu #class?#">
 	<!-- cut:item -->
-							<li id="tier#depth#-#slug#" class="tier#depth#item #current?# #firstfinal?# tier#depth#_#colour?#">
+							<li id="tier#depth#_#slugcomplete#" class="#class##slug#">
 		<!-- cut:link -->
 								<a href="#href?#">#link#</a>
 		<!-- /cut:link -->
@@ -13,6 +12,5 @@
 							</li>
 	<!-- /cut:item -->
 						</ul>
-					</div>
 <!-- /cut:menu -->
 <!-- paste:menu -->

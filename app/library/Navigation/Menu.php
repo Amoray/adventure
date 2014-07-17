@@ -1,39 +1,124 @@
 <?php
 
-namespace Navigation\Menu;
+namespace Navigation;
+
+use Template\Template AS Template;
 
 /**
 * Menu
 */
 class Menu
 {
+	private		$route				= null;
+	private		$name				= null;
+	private		$prepend			= null;
+
 	private		$children			= array();
 	private		$permission			= array();
-	private		$inheritPermmission	= array();
+	private		$inheritPermission	= array();
 	private		$class				= array();
 	private		$inheritClass		= array();
-	private		$depth				= -1;
+	private		$depth				= 0;
 
-	static function make()
+
+	static function make($route = null, $name = null)
 	{
-		return new Menu();
+		$menu = new Menu();
+
+		if (!is_null($route)) 
+		{
+			$menu->route = $route;
+		}
+
+		if (!is_null($name)) 
+		{
+			$menu->name = $name;
+		}
+
+		return $menu;
 	}
 
-	static function child($index, $name)
+	public function add($items)
 	{
-		$item = new Menu();
+		if (is_array($items)) 
+		{
+			foreach ($items as $item) 
+			{
+				$this->add($item);
+			}
 
-		$item->index($index);
-		$item->name($name);
+			return $this;
+		}
+
+		if ($items instanceof Menu) 
+		{
+			$items->setDepth($this->depth + 1);
+			$items->setInheritClass($this->inheritClass);
+			$items->setInheritPermission($this->inheritPermission);
+
+			$this->children[] = $items;
+
+			return $this;
+		}
+
+		throw new \Exception("Cannot add menu/item to stack");
+		
+	}
+
+	public function __toString()
+	{
+		return (string)$this->menuize();
+	}
+
+	public function itemize($template)
+	{
+		$item = $template->get('item');
+
+		$item->setdepth( $this->depth );
+		$item->setslug( str_replace('/', ' r_', rtrim($this->route, '/')) );
+		$item->setslugcomplete( preg_replace('/[^\da-z]/i', '', $this->name) );
+		$item->setclass( implode(' ', $this->class) );
+
+
+		$label = $item->get( (is_null($this->route) ? 'group' : 'link') );
+		
+		$label
+			->setlink($this->name)
+			->sethref($this->prepend . $this->route);
+		;
+
+		$item->add($label);
+
+		if (count($this->children)) 
+		{
+			$item->glue('menu', (string)$this->menuize());
+		}
 
 		return $item;
 	}
 
-	public function find($index)
+	public function menuize()
+	{
+		$template = Template::make('parts/nav');
+
+		$menu = $template->get('menu');
+		$menu->setdepth( $this->depth );
+		$menu->setclass( implode(' ', $this->class) );
+
+		foreach ($this->children as $child) 
+		{
+			$child->prepend($this->prepend);
+			$menu->add($child->itemize($menu));
+		}
+
+		return $menu;	
+	}
+
+	public function find($route)
 	{
 		foreach ($children as $child) 
 		{
-			$found = $child->find($index);
+			$found = $child->find($route);
 			if ($found instanceof Menu) 
 			{
 				return $found;
@@ -53,13 +138,9 @@ class Menu
 		return $this;
 	}
 
-	public function addChild(Menu $item)
+	public function prepend($path)
 	{
-		$item->setDepth($this->depth + 1);
-		$item->setInheritClass($this->inheritClass);
-		$item->setInheritPermmission($this->inheritPermmission);
-
-		$this->children[] = $item;
+		$this->prepend = $path;
 
 		return $this;
 	}
@@ -104,16 +185,21 @@ class Menu
 		return $this;
 	}
 
-	public function inheritClass($class)
+	public function inheritClass($class, $plus=false)
 	{
+		if ($plus) 
+		{
+			$this->addClass($class);
+		}
+
 		$this->inheritClass[] = $class;
 
 		return $this;
 	}
 
-	public function setInheritPermmission(array $permissions)
+	public function setInheritPermission(array $permissions)
 	{
-		$this->inheritPermmission = $permissions;
+		$this->inheritPermission = $permissions;
 
 		foreach ($permissions as $name => $permission) 
 		{
@@ -123,15 +209,19 @@ class Menu
 		return $this;
 	}
 
-	public function inheritPermmission($name, $perm)
+	public function inheritPermission($name, $perm, $plus=false)
 	{
-		if (array_key_exists($name, $this->inheritPermmission)) 
+		if (array_key_exists($name, $this->inheritPermission)) 
 		{
 			throw new \Exception("Permission already exists, cannot overwrite.");
 		}
 		else
 		{
-			$this->inheritPermmission[$name] = $perm;
+			if ($plus) 
+			{
+				$this->addPremission($name, $perm);
+			}
+			$this->inheritPermission[$name] = $perm;
 		}
 
 		return $this;
